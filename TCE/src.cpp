@@ -5,37 +5,31 @@
 #include <glm/gtx/string_cast.hpp>
 
 #include "shader.h"
+#include "player.h"
+#include "world.h"
 
 #include <iostream>
 #include <vector>
 #include <math.h>
+#include <chrono>
 
 constexpr double PI = 3.141592653589793238463;
-
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void processInput(GLFWwindow*);
+bool isWall();
+float toRadian(float);
 
 constexpr unsigned int SCR_WIDTH = 1024;
 constexpr unsigned int SCR_HEIGHT = 512;
 
-glm::vec2 player = glm::vec2(300, 300);
-float pdx, pdy, pa;
+Player* player = new Player(glm::vec2(300.f, 300.f), toRadian(-90), 60.f);
+World* world = new World(SCR_HEIGHT);
 
-unsigned int type = 0;
-
-std::vector<std::vector<unsigned int>> world =
-{
-    {1,1,1,1,1,1,1,1},
-    {1,0,0,0,0,0,0,1},
-    {1,1,1,1,0,0,0,1},
-    {1,0,0,0,0,0,0,1},
-    {1,0,0,0,0,0,0,1},
-    {1,0,0,0,0,1,0,1},
-    {1,0,0,0,0,0,0,1},
-    {1,1,1,1,1,1,1,1}
-};
+using Clock = std::chrono::high_resolution_clock;
+using TimePoint = Clock::time_point;
+using Duration = std::chrono::duration<float, std::ratio<1, 1>>;
 
 int main()
 {
@@ -77,8 +71,8 @@ int main()
     };
 
     float vertices3[] = {
-        0.f, -0.5f, 0.f,
-        0.f,  0.5f, 0.f
+        0.f,  0.f, 0.f,
+        1.f,  1.f, 0.f
     };
 
     unsigned int VBO, VAO1, VAO2, VAO3;
@@ -115,9 +109,18 @@ int main()
     Shader shader1("shader1.vert", "shader1.frag");
     Shader shader2("shader2.vert", "shader2.frag");
 
+    player->newPos.x = cos(player->angle) * 5, player->newPos.y = sin(player->angle) * 5;
+
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    const TimePoint tpStart = Clock::now();
+    TimePoint tpLast = tpStart;
     while (!glfwWindowShouldClose(window))
     {
+        TimePoint now = Clock::now();
+        const float time = std::chrono::duration_cast<Duration>(now - tpStart).count();
+        const float dt = std::chrono::duration_cast<Duration>(now - tpLast).count();
+        tpLast = now;
+
         glClear(GL_COLOR_BUFFER_BIT);
         processInput(window);
 
@@ -125,21 +128,20 @@ int main()
         shader1.setMat4("projection", projection);
         glm::mat4 model;
 
-        float sizeTile = SCR_HEIGHT / world.size();
         glBindVertexArray(VAO2);
         shader2.use();
-        for (int y = 0; y < world.size(); y++)
+        for (int y = 0; y < world->ySize; y++)
         {
-            for (int x = 0; x < world[y].size(); x++)
+            for (int x = 0; x < world->xSize; x++)
             {
                 shader2.setMat4("projection", projection);
 
                 model = glm::mat4(1.0f);                                                                                  
-                model = glm::translate(model, glm::vec3(((x * sizeTile) + (sizeTile / 2)), ((y * sizeTile) + (sizeTile / 2)), 0.f));
-                model = glm::scale(model, glm::vec3(sizeTile, sizeTile, sizeTile));
+                model = glm::translate(model, glm::vec3(((x * world->sizeTile) + (world->sizeTile / 2)), ((y * world->sizeTile) + (world->sizeTile / 2)), 0.f));
+                model = glm::scale(model, glm::vec3(world->sizeTile, world->sizeTile, world->sizeTile));
                 shader2.setMat4("model", model);
 
-                if (world[x][y] == 1)
+                if (world->map[y][x] > 0)
                     shader2.setBool("wall", true);
                 else
                     shader2.setBool("wall", false);
@@ -150,7 +152,7 @@ int main()
 
         shader1.use();
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(player, 0.f));
+        model = glm::translate(model, glm::vec3(player->position, 0.f));
         shader1.setMat4("model", model);
 
         glBindVertexArray(VAO1);
@@ -158,9 +160,10 @@ int main()
         glDrawArrays(GL_POINTS, 0, 1);
 
         glBindVertexArray(VAO3);
-        glLineWidth(10);
+        glLineWidth(4);
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(player.x+pdx*5, player.y+pdy*5, 0.f));
+        model = glm::translate(model, glm::vec3(player->position, 0.f));
+        model = glm::scale(model, glm::vec3(player->newPos.x * 40, player->newPos.y * 40, 0.f));
         shader1.setMat4("model", model);
         glDrawArrays(GL_LINES, 0, 2);
 
@@ -190,38 +193,56 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 void processInput(GLFWwindow* window)
 {
-    if (glfwGetKey(window, GLFW_KEY_S))
+    if (!isWall())
     {
-        player.x -= pdx;
-        player.y += pdy;
+        if (glfwGetKey(window, GLFW_KEY_S))
+        {
+            player->position.x -= player->newPos.x;
+            player->position.y += player->newPos.y;
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_W))
+        {
+            player->position.x += player->newPos.x;
+            player->position.y += player->newPos.y;
+        }
     }
 
-    if (glfwGetKey(window, GLFW_KEY_W))
-    {
-        player.x += pdx;
-        player.y += pdy;
-    }
 
     if (glfwGetKey(window, GLFW_KEY_A))
-    {
-        pa -= 0.1f;
-        if (pa < 0)
-            pa += 2 * PI;
-        pdx = cos(pa) * 5;
-        pdy = sin(pa) * 5;
+    { 
+        player->angle -= 0.1f;
+        if (player->angle < 0)
+            player->angle += 2 * PI;
+        player->newPos.x = cos(player->angle) * player->speed;
+        player->newPos.y = sin(player->angle) * player->speed;
     }
 
     if (glfwGetKey(window, GLFW_KEY_D))
     {
-        pa += 0.1f;
-        if (pa > 2 * PI)
-            pa -= 2 * PI;
-        pdx = cos(pa) * 5;
-        pdy = sin(pa) * 5;
+        player->angle += 0.1f;
+        if (player->angle > 2 * PI)
+            player->angle -= 2 * PI;
+        player->newPos.x = cos(player->angle) * player->speed;
+        player->newPos.y = sin(player->angle) * player->speed;
     }
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
+}
+
+float toRadian(float _degress)
+{
+    return _degress * PI / 180;
+}
+
+bool isWall()
+{
+    if (player->position.x+player->newPos.x < 0 || player->position.x+player->newPos.x > SCR_WIDTH / 2 || player->position.y+player->newPos.y < 0 || player->position.y+player->newPos.y > SCR_HEIGHT)
+        return true;
+
+    return world->map[floor((player->position.y + player->newPos.y) / world->sizeTile)][floor((player->position.x + player->newPos.x) / world->sizeTile)] != 0;
+   
 }

@@ -144,11 +144,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\sdks\glad\src\glad.c" />
+    <ClCompile Include="player.cpp" />
     <ClCompile Include="src.cpp" />
+    <ClCompile Include="world.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\sdks\stb_image.h" />
+    <ClInclude Include="player.h" />
     <ClInclude Include="shader.h" />
+    <ClInclude Include="world.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shader1.frag" />
