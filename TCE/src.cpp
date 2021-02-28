@@ -8,6 +8,7 @@
 #include "shader.h"
 #include "player.h"
 #include "world.h"
+#include "game.h"
 #include "ray.h"
 
 #include <iostream>
@@ -23,12 +24,13 @@ const float RAYS = SCR_WIDTH / PRECISION;
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void processInput(GLFWwindow*);
-bool isWall();
 void castAllRays();
 float toRadian(float);
 
-Player* player = new Player(glm::vec2(300.f, 300.f), toRadian(-90), toRadian(60));
-World* world = new World(SCR_HEIGHT);
+Game* game = new Game(SCR_HEIGHT, SCR_WIDTH);
+Player* player = new Player(glm::vec2(300.f, 300.f), toRadian(90), toRadian(60));
+World* world = new World(SCR_HEIGHT, game);
+
 std::vector<Ray*> rays = std::vector<Ray*>();
 
 using Clock = std::chrono::high_resolution_clock;
@@ -146,8 +148,8 @@ int main()
                 shader2.setMat4("projection", projection);
 
                 model = glm::mat4(1.0f);                                                                                  
-                model = glm::translate(model, glm::vec3(((x * world->sizeTile) + (world->sizeTile / 2)), ((y * world->sizeTile) + (world->sizeTile / 2)), 0.f));
-                model = glm::scale(model, glm::vec3(world->sizeTile, world->sizeTile, world->sizeTile));
+                model = glm::translate(model, glm::vec3(((x * world->TILE_SIZE) + (world->TILE_SIZE / 2)), ((y * world->TILE_SIZE) + (world->TILE_SIZE / 2)), 0.f));
+                model = glm::scale(model, glm::vec3(world->TILE_SIZE, world->TILE_SIZE, world->TILE_SIZE));
                 shader2.setMat4("model", model);
 
                 if (world->map[y][x] > 0)
@@ -179,10 +181,10 @@ int main()
         for (Ray* r : rays)
         {
             glBindVertexArray(VAO3);
-            glLineWidth(4);
+            glLineWidth(1);
             model = glm::mat4(1.0f);
             model = glm::translate(model, glm::vec3(player->position, 0.f));
-            model = glm::scale(model, glm::vec3(cos(r->rayAngle) * 40, sin(r->rayAngle) * 40, 0.f));
+            model = glm::scale(model, glm::vec3(cos(r->rayAngle) * 100, sin(r->rayAngle) * 100, 0.f));
             shader1.setMat4("model", model);
             glDrawArrays(GL_LINES, 0, 2);
         }
@@ -227,7 +229,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 void processInput(GLFWwindow* window)
 {
-    if (!isWall())
+    if (!world->hasWallAt(player->position.x+player->newPos.x, player->position.y+player->newPos.y))
     {
         if (glfwGetKey(window, GLFW_KEY_S))
         {
@@ -269,14 +271,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-bool isWall()
-{
-    if (player->position.x+player->newPos.x < 0 || player->position.x+player->newPos.x > SCR_WIDTH / 2 || player->position.y+player->newPos.y < 0 || player->position.y+player->newPos.y > SCR_HEIGHT)
-        return true;
-
-    return world->map[floor((player->position.y + player->newPos.y) / world->sizeTile)][floor((player->position.x + player->newPos.x) / world->sizeTile)] != 0;  
-}
-
 void castAllRays()
 {
     unsigned int columnId = 0;
@@ -288,6 +282,7 @@ void castAllRays()
         rayAngle += player->fov / RAYS;
         Ray* ray = new Ray(rayAngle);
         rays.push_back(ray);
+        ray->cast(columnId, player, world);
 
         columnId++;
     }
