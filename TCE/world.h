@@ -7,8 +7,8 @@ class World
 {
 public:
 	std::vector<std::vector<unsigned int>> map;
-    unsigned int xSize;
-    unsigned int ySize;
+    size_t xSize;
+    size_t ySize;
     float sizeTile;
 
 	World(float _height)

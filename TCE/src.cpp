@@ -4,28 +4,32 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include <glm/gtx/string_cast.hpp>
 
+#include "global_functions.h"
 #include "shader.h"
 #include "player.h"
 #include "world.h"
+#include "ray.h"
 
 #include <iostream>
 #include <vector>
 #include <math.h>
 #include <chrono>
 
-constexpr double PI = 3.141592653589793238463;
+constexpr unsigned int SCR_WIDTH = 1024;
+constexpr unsigned int SCR_HEIGHT = 512;
+constexpr unsigned int PRECISION = 60;
+const float RAYS = SCR_WIDTH / PRECISION;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void processInput(GLFWwindow*);
 bool isWall();
+void castAllRays();
 float toRadian(float);
 
-constexpr unsigned int SCR_WIDTH = 1024;
-constexpr unsigned int SCR_HEIGHT = 512;
-
-Player* player = new Player(glm::vec2(300.f, 300.f), toRadian(-90), 60.f);
+Player* player = new Player(glm::vec2(300.f, 300.f), toRadian(-90), toRadian(60));
 World* world = new World(SCR_HEIGHT);
+std::vector<Ray*> rays = std::vector<Ray*>();
 
 using Clock = std::chrono::high_resolution_clock;
 using TimePoint = Clock::time_point;
@@ -75,6 +79,9 @@ int main()
         1.f,  1.f, 0.f
     };
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     unsigned int VBO, VAO1, VAO2, VAO3;
     glGenVertexArrays(1, &VAO1);
     glGenVertexArrays(1, &VAO2);
@@ -116,6 +123,7 @@ int main()
     TimePoint tpLast = tpStart;
     while (!glfwWindowShouldClose(window))
     {
+        // ---------------------------------------------------------------------------------------------------------------------------------------------------------
         TimePoint now = Clock::now();
         const float time = std::chrono::duration_cast<Duration>(now - tpStart).count();
         const float dt = std::chrono::duration_cast<Duration>(now - tpLast).count();
@@ -124,6 +132,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
         processInput(window);
 
+        // ---------------------------------------------------------------------------------------------------------------------------------------------------------
         glm::mat4 projection = glm::ortho(0.f, 1024.f, 512.f, 0.f);
         shader1.setMat4("projection", projection);
         glm::mat4 model;
@@ -150,15 +159,9 @@ int main()
             }
         }
 
+        // ---------------------------------------------------------------------------------------------------------------------------------------------------------
         shader1.use();
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(player->position, 0.f));
-        shader1.setMat4("model", model);
-
-        glBindVertexArray(VAO1);
-        glPointSize(32);
-        glDrawArrays(GL_POINTS, 0, 1);
-
+        shader1.setVec4("color", 0.2f, 0.5f, 0.8f, 0.5f);
         glBindVertexArray(VAO3);
         glLineWidth(4);
         model = glm::mat4(1.0f);
@@ -167,13 +170,44 @@ int main()
         shader1.setMat4("model", model);
         glDrawArrays(GL_LINES, 0, 2);
 
+        // ---------------------------------------------------------------------------------------------------------------------------------------------------------
+        rays.clear();
+        castAllRays();
+
+        shader1.use();
+        shader1.setVec4("color", 0.2f, 0.5f, 0.8f, 0.5f);
+        for (Ray* r : rays)
+        {
+            glBindVertexArray(VAO3);
+            glLineWidth(4);
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(player->position, 0.f));
+            model = glm::scale(model, glm::vec3(cos(r->rayAngle) * 40, sin(r->rayAngle) * 40, 0.f));
+            shader1.setMat4("model", model);
+            glDrawArrays(GL_LINES, 0, 2);
+        }
+
+        // ---------------------------------------------------------------------------------------------------------------------------------------------------------
+        shader1.use();
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(player->position, 0.f));
+        shader1.setMat4("model", model);
+        shader1.setVec4("color", 0.5f, 0.5f, 0.5f, 1.f);
+
+        glBindVertexArray(VAO1);
+        glPointSize(32);
+        glDrawArrays(GL_POINTS, 0, 1);
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
     glDeleteVertexArrays(1, &VAO1);
+    glDeleteVertexArrays(1, &VAO2);
+    glDeleteVertexArrays(1, &VAO3);
     glDeleteBuffers(1, &VBO);
     glDeleteProgram(shader1.ID);
+    glDeleteProgram(shader2.ID);
 
     glfwTerminate();
     return 0;
@@ -212,8 +246,9 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_A))
     { 
         player->angle -= 0.1f;
-        if (player->angle < 0)
-            player->angle += 2 * PI;
+
+        player->angle = normalizeAngle(player->angle);
+
         player->newPos.x = cos(player->angle) * player->speed;
         player->newPos.y = sin(player->angle) * player->speed;
     }
@@ -221,8 +256,9 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_D))
     {
         player->angle += 0.1f;
-        if (player->angle > 2 * PI)
-            player->angle -= 2 * PI;
+
+        player->angle = normalizeAngle(player->angle);
+
         player->newPos.x = cos(player->angle) * player->speed;
         player->newPos.y = sin(player->angle) * player->speed;
     }
@@ -233,16 +269,26 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-float toRadian(float _degress)
-{
-    return _degress * PI / 180;
-}
-
 bool isWall()
 {
     if (player->position.x+player->newPos.x < 0 || player->position.x+player->newPos.x > SCR_WIDTH / 2 || player->position.y+player->newPos.y < 0 || player->position.y+player->newPos.y > SCR_HEIGHT)
         return true;
 
-    return world->map[floor((player->position.y + player->newPos.y) / world->sizeTile)][floor((player->position.x + player->newPos.x) / world->sizeTile)] != 0;
-   
+    return world->map[floor((player->position.y + player->newPos.y) / world->sizeTile)][floor((player->position.x + player->newPos.x) / world->sizeTile)] != 0;  
+}
+
+void castAllRays()
+{
+    unsigned int columnId = 0;
+
+    float rayAngle = player->angle - (player->fov / 2);
+
+    for (unsigned int i = 0; i < 1/*RAYS*/; i++)
+    {
+        rayAngle += player->fov / RAYS;
+        Ray* ray = new Ray(rayAngle);
+        rays.push_back(ray);
+
+        columnId++;
+    }
 }
