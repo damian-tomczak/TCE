@@ -8,7 +8,8 @@ public:
 	float angle;
 	glm::vec2 newPos;
 	float fov;
-	float speed = 2.5f;
+	float moveSpeed = 2.5f;
+	float rotationSpeed = 0.05f;
 
 	Player(glm::vec2 _position, float _angle, float _fov)
 	{

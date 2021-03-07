@@ -58,11 +58,5 @@
     <None Include="shader1.vert">
       <Filter>Source Files\shaders</Filter>
     </None>
-    <None Include="shader2.frag">
-      <Filter>Source Files\shaders</Filter>
-    </None>
-    <None Include="shader2.vert">
-      <Filter>Source Files\shaders</Filter>
-    </None>
   </ItemGroup>
 </Project>

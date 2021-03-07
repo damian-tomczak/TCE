@@ -20,6 +20,8 @@ public:
 	bool isRayFacingLeft;
 
 	bool fieldOfView;
+	
+	unsigned int hitWallColor;
 
 	Ray(float _rayAngle)
 	{
@@ -36,6 +38,7 @@ public:
 		this->isRayFacingLeft = !isRayFacingRight;
 
 		this->fieldOfView = false;
+		this->hitWallColor = 0;
 	}
 
 	void cast(unsigned int columnId, Player* player, World* world, Game* game)
@@ -48,6 +51,7 @@ public:
 		bool foundHorzWallHit = false;
 		float horzWallHitX = 0;
 		float horzWallHitY = 0;
+		int horzWallColor = 0;
 
 		yintercept = floor(player->position.y / world->TILE_SIZE) * world->TILE_SIZE;
 		yintercept += this->isRayFacingDown ? world->TILE_SIZE : 0;
@@ -67,15 +71,16 @@ public:
 		while (nextHorzTouchX >= 0 && nextHorzTouchX <= game->WINDOW_WIDTH / 2
 			&& nextHorzTouchY >= 0 && nextHorzTouchY <= game->WINDOW_HEIGHT)
 		{
-			if (world->hasWallAt(nextHorzTouchX, nextHorzTouchY - (this->isRayFacingUp ? 1 : 0)))
-			{
+			int wallGridContent = world->getWallContentAt(nextHorzTouchX, nextHorzTouchY + (this->isRayFacingUp ? -1 : 0));
+
+			if (wallGridContent != 0) {
 				foundHorzWallHit = true;
 				horzWallHitX = nextHorzTouchX;
 				horzWallHitY = nextHorzTouchY;
+				horzWallColor = wallGridContent;
 				break;
 			}
-			else
-			{
+			else {
 				nextHorzTouchX += xstep;
 				nextHorzTouchY += ystep;
 			}
@@ -85,6 +90,7 @@ public:
 		bool foundVertWallHit = false;
 		float vertWallHitX = 0;
 		float vertWallHitY = 0;
+		int vertWallColor = 0;
 
 		xintercept = floor(player->position.x / world->TILE_SIZE) * world->TILE_SIZE;
 		xintercept += this->isRayFacingRight ? world->TILE_SIZE : 0;
@@ -104,11 +110,14 @@ public:
 		while (nextVertTouchX >= 0 && nextVertTouchX <= game->WINDOW_WIDTH / 2
 			&& nextVertTouchY >= 0 && nextVertTouchY <= game->WINDOW_HEIGHT)
 		{
-			if (world->hasWallAt(nextVertTouchX - (this->isRayFacingLeft ? 1 : 0), nextVertTouchY))
+			int wallGridContent = world->getWallContentAt(nextVertTouchX + (this->isRayFacingLeft ? -1 : 0), nextVertTouchY);
+
+			if (wallGridContent != 0)
 			{
 				foundVertWallHit = true;
 				vertWallHitX = nextVertTouchX;
 				vertWallHitY = nextVertTouchY;
+				vertWallColor = wallGridContent;
 				break;
 			}
 			else
@@ -127,11 +136,21 @@ public:
 			: INT_MAX;
 
 		// smallest
-		this->wallHitX = (horzHitDistance < vertHitDistance) ? horzWallHitX : vertWallHitX;
-		this->wallHitY = (horzHitDistance < vertHitDistance) ? horzWallHitY : vertWallHitY;
-		this->distance = (horzHitDistance < vertHitDistance) ? horzHitDistance : vertHitDistance;
-		this->wasHitVertical = (vertHitDistance < horzHitDistance);
-		//this->finalHitX = horzWallHitX;
-		//this->finalHitY = horzWallHitY;
+		if (vertHitDistance < horzHitDistance)
+		{
+			this->wallHitX = vertWallHitX;
+			this->wallHitY = vertWallHitY;
+			this->distance = vertHitDistance;
+			this->hitWallColor = vertWallColor;
+			this->wasHitVertical = true;
+		}
+		else
+		{
+			this->wallHitX = horzWallHitX;
+			this->wallHitY = horzWallHitY;
+			this->distance = horzHitDistance;
+			this->hitWallColor = horzWallColor;
+			this->wasHitVertical = false;
+		}
 	}
 };
