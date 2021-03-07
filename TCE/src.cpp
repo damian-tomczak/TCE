@@ -15,6 +15,7 @@
 #include <vector>
 #include <math.h>
 #include <chrono>
+#include <memory>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -169,9 +170,14 @@ int main()
         glDrawArrays(GL_LINES, 0, 2);
 
         // ---------------------------------------------------------------------------------------------------------------------------------------------------------
+        for (Ray* i : rays)
+        {
+            delete i;
+        }
+
         rays.clear();
         castAllRays();
-        
+
         glBindVertexArray(VAO3);
         shader1.use();
         for (Ray* r : rays)
@@ -242,16 +248,14 @@ int main()
 
             float wallStripHeight = (world->TILE_SIZE / correctWallDistance) * distanceProjectionPlane;
 
-            std::cout << wallStripHeight << std::endl;
-
             model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(i * world->WALL_STRIP_WIDTH + SCR_WIDTH/2, SCR_HEIGHT/2 -  wallStripHeight / 3, 0.f));
+            model = glm::translate(model, glm::vec3(i * world->WALL_STRIP_WIDTH + SCR_WIDTH / 2, SCR_HEIGHT / 2 - wallStripHeight / 3, 0.f));
             model = glm::scale(model, glm::vec3(world->WALL_STRIP_WIDTH, wallStripHeight, 0.f));
             shader1.setMat4("model", model);
 
             bool colorBrightness = ray->wasHitVertical ? true : false;
 
-            if(ray->hitWallColor == 1)
+            if (ray->hitWallColor == 1)
                 shader1.setVec4("color", colorBrightness ? 1.f : 0.78f, 0.f, 0.f, 1.f);
             else if (ray->hitWallColor == 2)
                 shader1.setVec4("color", 0.f, colorBrightness ? 1.f : 0.78f, 0.f, 1.f);
@@ -271,6 +275,7 @@ int main()
     glDeleteVertexArrays(1, &VAO3);
     glDeleteBuffers(1, &VBO);
     glDeleteProgram(shader1.ID);
+
 
     glfwTerminate();
     return 0;

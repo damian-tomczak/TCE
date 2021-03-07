@@ -2,7 +2,7 @@
 
 constexpr unsigned int SCR_WIDTH = 1024;
 constexpr unsigned int SCR_HEIGHT = 512;
-constexpr unsigned int PRECISION = 8;
+constexpr unsigned int PRECISION = 4;
 const float RAYS = 360.f / PRECISION;
 
 class Game
