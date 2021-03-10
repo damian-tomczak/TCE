@@ -160,16 +160,6 @@ int main()
         }
 
         // ---------------------------------------------------------------------------------------------------------------------------------------------------------
-        shader1.setVec4("color", 1.f, 0.f, 0.f, 0.5f);
-        glBindVertexArray(VAO3);
-        glLineWidth(4);
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(player->position, 0.f));
-        model = glm::scale(model, glm::vec3(player->newPos.x * 40, player->newPos.y * 40, 0.f));
-        shader1.setMat4("model", model);
-        glDrawArrays(GL_LINES, 0, 2);
-
-        // ---------------------------------------------------------------------------------------------------------------------------------------------------------
         for (Ray* i : rays)
         {
             delete i;
@@ -179,7 +169,6 @@ int main()
         castAllRays();
 
         glBindVertexArray(VAO3);
-        shader1.use();
         for (Ray* r : rays)
         {
             if(r->fieldOfView)
@@ -196,19 +185,8 @@ int main()
         }
 
         // ---------------------------------------------------------------------------------------------------------------------------------------------------------
-        shader1.use();
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(player->position, 0.f));
-        shader1.setMat4("model", model);
-        shader1.setVec4("color", 0.5f, 0.5f, 0.5f, 1.f);
-
-        glBindVertexArray(VAO1);
-        glPointSize(32);
-        glDrawArrays(GL_POINTS, 0, 1);
-
-        // ---------------------------------------------------------------------------------------------------------------------------------------------------------
         glBindVertexArray(VAO2);
-        shader1.use();
+        shader1.setVec4("color", 0.5f, 0.5f, 0.5f, 1.f);
 
         shader1.setMat4("projection", projection);
 
@@ -222,7 +200,6 @@ int main()
         // ---------------------------------------------------------------------------------------------------------------------------------------------------------
 
         glBindVertexArray(VAO2);
-        shader1.use();
 
         shader1.setMat4("projection", projection);
 
@@ -236,7 +213,6 @@ int main()
 
         // ---------------------------------------------------------------------------------------------------------------------------------------------------------
         glBindVertexArray(VAO2);
-        shader1.use();
 
         for (int i = 0; i < RAYS; i++)
         {
@@ -249,7 +225,7 @@ int main()
             float wallStripHeight = (world->TILE_SIZE / correctWallDistance) * distanceProjectionPlane;
 
             model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(i * world->WALL_STRIP_WIDTH + SCR_WIDTH / 2, SCR_HEIGHT / 2 - wallStripHeight / 3, 0.f));
+            model = glm::translate(model, glm::vec3(i * world->WALL_STRIP_WIDTH + SCR_WIDTH / 2 + world->WALL_STRIP_WIDTH/2, SCR_HEIGHT / 2 - wallStripHeight / 3, 0.f));
             model = glm::scale(model, glm::vec3(world->WALL_STRIP_WIDTH, wallStripHeight, 0.f));
             shader1.setMat4("model", model);
 
@@ -265,6 +241,25 @@ int main()
             glDrawArrays(GL_TRIANGLES, 0, 6);
         }
 
+        // ---------------------------------------------------------------------------------------------------------------------------------------------------------
+        shader1.setVec4("color", 1.f, 0.f, 0.f, 0.5f);
+        glBindVertexArray(VAO3);
+        glLineWidth(4);
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(player->position, 0.f));
+        model = glm::scale(model, glm::vec3(player->newPos.x * 40, player->newPos.y * 40, 0.f));
+        shader1.setMat4("model", model);
+        glDrawArrays(GL_LINES, 0, 2);
+
+        // ---------------------------------------------------------------------------------------------------------------------------------------------------------
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(player->position, 0.f));
+        shader1.setMat4("model", model);
+        shader1.setVec4("color", 0.5f, 0.5f, 0.5f, 1.f);
+
+        glBindVertexArray(VAO1);
+        glPointSize(32);
+        glDrawArrays(GL_POINTS, 0, 1);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -339,7 +334,7 @@ void castAllRays()
 
     float odstep = player->fov / 360;
 
-    for (unsigned int i = 0; i <= toRadian(360)*RAYS-RAYS/2+9; i++)
+    for (unsigned int i = 0; i <= toRadian(360)*RAYS - player->fov /2; i++)
     {
         rayAngle += player->fov / RAYS;
         Ray* ray = new Ray(rayAngle);
