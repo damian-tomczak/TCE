@@ -84,8 +84,11 @@ void TCE_Editor::createWorld()
         world.push_back(std::vector<Tile*>());
         for (unsigned int x = 0; x < WORLD_SIZE; x++)
         {
-            world[y].push_back(new Tile(x, y));
-            world[y][x]->rect = scene->addRect(QRectF(1 * x * tileSize, 1 * y * tileSize, tileSize, tileSize));
+            unsigned int positionX = 1 * x * tileSize;
+            unsigned int positionY = 1 * y * tileSize;
+            world[y].push_back(new Tile(positionX, positionY, x, y, tileSize));
+            scene->addItem(world[y][x]);
+            //world[y][x]->rect = scene->addRect(QRectF(1 * x * tileSize, 1 * y * tileSize, tileSize, tileSize));
         }
     }
 

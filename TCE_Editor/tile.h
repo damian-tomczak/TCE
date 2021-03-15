@@ -1,20 +1,29 @@
 #pragma once
 
+#include <QPainter>
 #include <QGraphicsItem>
 
-class Tile
+class Tile : public QGraphicsItem
 {
 public:
+	Tile(unsigned int, unsigned int, unsigned int, unsigned int, unsigned int);
+
+	QRectF boundingRect() const;
+	void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
+
+protected:
+	void mousePressEvent(QGraphicsSceneMouseEvent* event);
+	void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
+
+private:
+	bool bpressed;
 	unsigned int type;
 	unsigned int x;
 	unsigned int y;
-	QGraphicsRectItem* rect;
 
-	Tile(unsigned int _x, unsigned int _y)
-	{
-		this->type = 0;
-		this->x = _x;
-		this->y = _y;
-	}
+	unsigned int positionX;
+	unsigned int positionY;
+	
+	unsigned int tileSize;
 };
 
