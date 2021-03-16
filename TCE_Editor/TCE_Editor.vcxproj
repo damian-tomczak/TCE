@@ -96,6 +96,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="graphics_scene.cpp" />
     <ClCompile Include="tile.cpp" />
     <QtRcc Include="tce_editor.qrc" />
     <QtUic Include="projectsettings.ui" />
@@ -109,6 +110,7 @@
     <QtMoc Include="projectsettings.h" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="graphics_scene.h" />
     <ClInclude Include="tile.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

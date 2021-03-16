@@ -9,14 +9,12 @@ public:
 	Tile(unsigned int, unsigned int, unsigned int, unsigned int, unsigned int);
 
 	QRectF boundingRect() const;
-	void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
+	virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
 
-protected:
-	void mousePressEvent(QGraphicsSceneMouseEvent* event);
-	void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
+	bool bborder;
+	bool bpressed;
 
 private:
-	bool bpressed;
 	unsigned int type;
 	unsigned int x;
 	unsigned int y;

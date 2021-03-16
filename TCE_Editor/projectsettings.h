@@ -6,7 +6,7 @@
 #include <QPushButton>
 #include <QSpinBox>
 
-#include "TCE_Editor.h"
+#include "tce_editor.h"
 
 #include "ui_projectsettings.h"
 
@@ -25,4 +25,7 @@ private:
 	QLabel* label;
 
 	void setWorldSize();
+
+signals:
+	void changed(unsigned int);
 };

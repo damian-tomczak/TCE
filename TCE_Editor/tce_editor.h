@@ -9,9 +9,8 @@
 
 #include "projectsettings.h"
 #include "tile.h"
+#include "graphics_scene.h"
 #include "ui_tce_editor.h"
-
-static unsigned int WORLD_SIZE;
 
 class TCE_Editor : public QMainWindow
 {
@@ -35,11 +34,12 @@ private:
     QLabel* info;
     QComboBox* color;
 
-    std::vector<std::vector<Tile*>> world;
-
     QVBoxLayout* mainLayout;
     QHBoxLayout* currentLayout;
     QHBoxLayout* changeLayout;
+
+    QGraphicsView* view;
+    GraphicsScene* scene;
 
 
     void createMenus();
@@ -52,6 +52,7 @@ protected:
     void exportWorld();
     void createLayout();
     void projectSettings();
-    void createWorld();
+    void createWorld(unsigned int);
+    void changeWorld(unsigned int);
 
 };

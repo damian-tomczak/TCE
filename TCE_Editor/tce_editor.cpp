@@ -7,11 +7,10 @@ TCE_Editor::TCE_Editor(QWidget *parent)
 
     this->setWindowTitle("TCastEngine");
     this->resize(800, 600);
-    WORLD_SIZE = 4;
 
     createActions();
     createMenus();
-    createWorld();
+    createWorld(10);
     createLayout();
 }
 
@@ -70,31 +69,38 @@ void TCE_Editor::projectSettings()
 {
     ProjectSettings* wProjSet;
     wProjSet = new ProjectSettings();
+
+    connect(wProjSet, &ProjectSettings::changed, this, &TCE_Editor::changeWorld);
     wProjSet->show();
 }
 
-void TCE_Editor::createWorld()
+void TCE_Editor::createWorld(unsigned int WORLD_SIZE)
 {
-    QGraphicsScene* scene = new QGraphicsScene(QRect(0, 0, 900, 900));
-
-    float tileSize = 900 / WORLD_SIZE;
+    scene = new GraphicsScene(900 / WORLD_SIZE, WORLD_SIZE);
 
     for (unsigned int y = 0; y < WORLD_SIZE; y++)
     {
-        world.push_back(std::vector<Tile*>());
+        scene->world.push_back(std::vector<Tile*>());
         for (unsigned int x = 0; x < WORLD_SIZE; x++)
         {
-            unsigned int positionX = 1 * x * tileSize;
-            unsigned int positionY = 1 * y * tileSize;
-            world[y].push_back(new Tile(positionX, positionY, x, y, tileSize));
-            scene->addItem(world[y][x]);
+            unsigned int positionX = 1 * x * scene->TILE_SIZE;
+            unsigned int positionY = 1 * y * scene->TILE_SIZE;
+            scene->world[y].push_back(new Tile(positionX, positionY, x, y, scene->TILE_SIZE));
+
+            if (y == 0 || y == WORLD_SIZE-1 
+                ||  x == 0 || x == WORLD_SIZE-1)
+                scene->world[y][x]->bborder = true;
+
+            scene->addItem(scene->world[y][x]);
             //world[y][x]->rect = scene->addRect(QRectF(1 * x * tileSize, 1 * y * tileSize, tileSize, tileSize));
         }
     }
 
-    QGraphicsView* view = new QGraphicsView(this);
+    view = new QGraphicsView(this);
     view->setScene(scene);
     view->setGeometry(QRect(0, 33, 600, 567));
+
+    update();
 }
 
 void TCE_Editor::exportWorld()
@@ -124,3 +130,33 @@ void TCE_Editor::createLayout()
 
     this->setLayout(mainLayout);
 }
+
+/*
+void TCE_Editor::changeWorld(unsigned int WORLD_SIZE)
+{
+    scene = new GraphicsScene(900 / WORLD_SIZE, WORLD_SIZE);
+
+    for (unsigned int y = 0; y < WORLD_SIZE; y++)
+    {
+        scene->world.push_back(std::vector<Tile*>());
+        for (unsigned int x = 0; x < WORLD_SIZE; x++)
+        {
+            unsigned int positionX = 1 * x * scene->TILE_SIZE;
+            unsigned int positionY = 1 * y * scene->TILE_SIZE;
+            scene->world[y].push_back(new Tile(positionX, positionY, x, y, scene->TILE_SIZE));
+
+            if (y == 0 || y == WORLD_SIZE - 1
+                || x == 0 || x == WORLD_SIZE - 1)
+                scene->world[y][x]->bborder = true;
+
+            scene->addItem(scene->world[y][x]);
+        }
+    }
+
+    view = new QGraphicsView(this);
+    view->setScene(scene);
+    view->setGeometry(QRect(0, 33, 600, 567));
+
+    update();
+}
+*/

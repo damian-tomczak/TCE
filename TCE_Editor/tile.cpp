@@ -11,6 +11,8 @@ Tile::Tile(unsigned int _positionX, unsigned int _positionY, unsigned int _x, un
     this->positionY = _positionY;
     this->tileSize = _tileSize;
     //setFlag(ItemIsMovable);
+
+    this->bborder = false;
 }
 
 QRectF Tile::boundingRect() const
@@ -23,8 +25,10 @@ void Tile::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWid
     QRectF rec = boundingRect();
     QBrush brush(Qt::blue);
 
-    if (bpressed)
+    if(bborder)
         brush.setColor(Qt::red);
+    else if (bpressed)
+        brush.setColor(Qt::green);
     else
         brush.setColor(Qt::blue);
 
@@ -33,16 +37,16 @@ void Tile::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWid
 
 }
 
+/*
 void Tile::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-    bpressed = true;
-    update();
-    QGraphicsItem::mousePressEvent(event);
-}
+    if (!bborder)
+        if (bpressed == false)
+            bpressed = true;
+        else
+            bpressed = false;
 
-void Tile::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
-{
-    bpressed = false;
     update();
     QGraphicsItem::mousePressEvent(event);
 }
+*/

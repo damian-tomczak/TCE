@@ -8,6 +8,9 @@ ProjectSettings::ProjectSettings(QWidget *parent)
 	this->setFixedSize(150, 150);
 
 	size = new QSpinBox();
+	size->setMinimum(1);
+	size->setMaximum(100);
+
 	label = new QLabel("Input world size: ");
 	button = new QPushButton("Confirm");
 
@@ -32,5 +35,5 @@ ProjectSettings::~ProjectSettings()
 void ProjectSettings::setWorldSize()
 {
 	this->hide();
-	WORLD_SIZE = size->value();
+	emit changed(size->value());
 }
