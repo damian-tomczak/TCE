@@ -33,7 +33,7 @@ using Clock = std::chrono::high_resolution_clock;
 using TimePoint = Clock::time_point;
 using Duration = std::chrono::duration<float, std::ratio<1, 1>>;
 
-int main()
+int WinMain()
 {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);

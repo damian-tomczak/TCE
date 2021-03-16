@@ -96,44 +96,78 @@ void TCE_Editor::createWorld(unsigned int WORLD_SIZE)
         }
     }
 
-    view = new QGraphicsView(this);
-    view->setScene(scene);
-    view->setGeometry(QRect(0, 33, 600, 567));
-
     update();
 }
 
 void TCE_Editor::exportWorld()
 {
+    std::fstream file("main.level", std::ios::out); 
+    std::string str = "";
 
+    for (unsigned int y = 0; y < scene->WORLD_SIZE; y++)
+    {
+        str.append("\n");
+        for (unsigned int x = 0; x < scene->WORLD_SIZE; x++)
+        {
+            str.append(std::to_string(scene->world[y][x]->type));
+        }
+    }
+
+    file.write(&str[0], str.length());
+
+    std::wstring path = ExePath() + L"\\TCE.exe";
+    startup(const_cast<wchar_t*>(path.c_str()));
 }
 
 void TCE_Editor::createLayout()
 {
-    mainLayout = new QVBoxLayout;
+    mainLayout = new QHBoxLayout;
+    rightLayout = new QVBoxLayout;
     currentLayout = new QHBoxLayout;
     changeLayout = new QHBoxLayout;
 
-    currentX = new QLabel("test");
-    currentY = new QLabel("test");
+    currentX = new QLabel("Current X: ");
+    currentY = new QLabel("Current Y: ");
+
     info = new QLabel("Change Color: ");
+    color = new QComboBox;
+    color->addItem("");
+    color->addItem("Orange");
+    color->addItem("Yellow");
+    color->addItem("Green");
+
+
+    view = new QGraphicsView(this);
+    view->setScene(scene);
+    view->setGeometry(QRect(0, 33, 600, 567));
+
+    mainLayout->addWidget(view);
 
     currentLayout->addWidget(currentX);
     currentLayout->addWidget(currentY);
 
-    //color = new QComboBox();
     changeLayout->addWidget(info);
-    //changeLayout->addWidget(color);
+    changeLayout->addWidget(color);
 
-    mainLayout->addLayout(currentLayout);
-    mainLayout->addLayout(changeLayout);
+    rightLayout->addLayout(currentLayout);
+    rightLayout->addLayout(changeLayout);
+    
+    rightLayout->addWidget(currentX);
 
-    this->setLayout(mainLayout);
+    rightLayout->setAlignment(Qt::AlignRight);
+
+    mainLayout->addLayout(rightLayout);
+
+    mainWidget = new QWidget();
+    mainWidget->setLayout(mainLayout);
+
+    setCentralWidget(mainWidget);
 }
 
-/*
+
 void TCE_Editor::changeWorld(unsigned int WORLD_SIZE)
 {
+    delete scene;
     scene = new GraphicsScene(900 / WORLD_SIZE, WORLD_SIZE);
 
     for (unsigned int y = 0; y < WORLD_SIZE; y++)
@@ -153,10 +187,31 @@ void TCE_Editor::changeWorld(unsigned int WORLD_SIZE)
         }
     }
 
-    view = new QGraphicsView(this);
     view->setScene(scene);
-    view->setGeometry(QRect(0, 33, 600, 567));
 
     update();
 }
-*/
+
+void TCE_Editor::startup(LPWSTR lpApplicationName)
+{
+    STARTUPINFO info = { sizeof(info) };
+    PROCESS_INFORMATION processInfo;
+    if (CreateProcess(lpApplicationName, NULL, NULL, NULL, TRUE, 0, NULL, NULL, &info, &processInfo))
+    {
+        WaitForSingleObject(processInfo.hProcess, INFINITE);
+        CloseHandle(processInfo.hProcess);
+        CloseHandle(processInfo.hThread);
+    }
+    else
+    {
+        qDebug() << "CreateProcess failed " << GetLastError();
+    }
+
+}
+
+std::wstring TCE_Editor::ExePath() {
+    TCHAR buffer[MAX_PATH];
+    GetModuleFileName(NULL, buffer, MAX_PATH);
+    std::wstring::size_type pos = std::wstring(buffer).find_last_of(L"\\");
+    return std::wstring(buffer).substr(0, pos);
+}

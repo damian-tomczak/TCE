@@ -5,7 +5,12 @@
 #include <QDebug>
 #include <QGraphicsScene>
 #include <QGraphicsView>
+#include <QComboBox>
+
+#include <fstream>
 #include <vector>
+#include <windows.h>
+#include <filesystem>
 
 #include "projectsettings.h"
 #include "tile.h"
@@ -34,7 +39,8 @@ private:
     QLabel* info;
     QComboBox* color;
 
-    QVBoxLayout* mainLayout;
+    QHBoxLayout* mainLayout;
+    QVBoxLayout* rightLayout;
     QHBoxLayout* currentLayout;
     QHBoxLayout* changeLayout;
 
@@ -42,8 +48,12 @@ private:
     GraphicsScene* scene;
 
 
+    QWidget* mainWidget;
+
     void createMenus();
     void createActions();
+    void startup(LPWSTR);
+    std::wstring ExePath();
 
 protected:
     void aboutMessage();

@@ -20,7 +20,5 @@ public:
     unsigned int TILE_SIZE;
     unsigned int WORLD_SIZE;
 
-private:
-    int lastItemX;
-    int lastItemY;
+    ~GraphicsScene();
 };

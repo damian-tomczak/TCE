@@ -35,3 +35,17 @@ void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* mouseEvent)
 
     QGraphicsScene::mousePressEvent(mouseEvent);
 }
+
+GraphicsScene::~GraphicsScene()
+{
+    unsigned int worldSize = world.size();
+    for (unsigned int y = 0; y < worldSize; y++)
+    {
+        for (Tile* i : world[y])
+        {
+            delete i;
+        }
+    }
+
+    world.clear();
+}

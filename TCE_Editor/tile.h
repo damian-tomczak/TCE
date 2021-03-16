@@ -13,9 +13,9 @@ public:
 
 	bool bborder;
 	bool bpressed;
+	unsigned int type;
 
 private:
-	unsigned int type;
 	unsigned int x;
 	unsigned int y;
 

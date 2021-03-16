@@ -6,8 +6,6 @@
 #include <QPushButton>
 #include <QSpinBox>
 
-#include "tce_editor.h"
-
 #include "ui_projectsettings.h"
 
 class ProjectSettings : public QWidget
