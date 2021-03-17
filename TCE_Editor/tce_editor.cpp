@@ -10,8 +10,8 @@ TCE_Editor::TCE_Editor(QWidget *parent)
 
     createActions();
     createMenus();
-    createWorld(10);
     createLayout();
+    createWorld(10);
 }
 
 void TCE_Editor::aboutMessage()
@@ -76,7 +76,8 @@ void TCE_Editor::projectSettings()
 
 void TCE_Editor::createWorld(unsigned int WORLD_SIZE)
 {
-    scene = new GraphicsScene(900 / WORLD_SIZE, WORLD_SIZE);
+
+    scene = new GraphicsScene(900 / WORLD_SIZE, WORLD_SIZE, currentX, currentY);
 
     for (unsigned int y = 0; y < WORLD_SIZE; y++)
     {
@@ -168,7 +169,7 @@ void TCE_Editor::createLayout()
 void TCE_Editor::changeWorld(unsigned int WORLD_SIZE)
 {
     delete scene;
-    scene = new GraphicsScene(900 / WORLD_SIZE, WORLD_SIZE);
+    scene = new GraphicsScene(900 / WORLD_SIZE, WORLD_SIZE, currentX, currentY);
 
     for (unsigned int y = 0; y < WORLD_SIZE; y++)
     {

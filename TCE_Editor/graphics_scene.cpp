@@ -1,7 +1,7 @@
 #include "graphics_scene.h"
 
-GraphicsScene::GraphicsScene(unsigned int _tileSize, unsigned int _worldSize, QObject* parent) :
-    QGraphicsScene(parent), TILE_SIZE(_tileSize), WORLD_SIZE(_worldSize)
+GraphicsScene::GraphicsScene(unsigned int _tileSize, unsigned int _worldSize, QLabel* _currentX, QLabel* _currentY, QObject* parent) :
+    QGraphicsScene(parent), TILE_SIZE(_tileSize), WORLD_SIZE(_worldSize), currentX(_currentX), currentY(_currentY)
 {
 
 }
@@ -20,10 +20,19 @@ void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* mouseEvent)
             else if (world[y][x] == item)
             {
                 if (!world[y][x]->bborder)
+                {
                     if (world[y][x]->bpressed == false)
+                    {
                         world[y][x]->bpressed = true;
+
+                        currentX->setText(QString::number(x));
+                        currentY->setText(QString::number(y));
+                    }
                     else
+                    {
                         world[y][x]->bpressed = false;
+                    }
+                }
             }
 
             else

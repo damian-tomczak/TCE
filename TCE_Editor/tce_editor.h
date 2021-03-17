@@ -47,7 +47,6 @@ private:
     QGraphicsView* view;
     GraphicsScene* scene;
 
-
     QWidget* mainWidget;
 
     void createMenus();
