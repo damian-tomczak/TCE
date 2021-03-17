@@ -41,6 +41,7 @@ private:
 
     QHBoxLayout* mainLayout;
     QVBoxLayout* rightLayout;
+
     QHBoxLayout* currentLayout;
     QHBoxLayout* changeLayout;
 
@@ -63,5 +64,6 @@ protected:
     void projectSettings();
     void createWorld(unsigned int);
     void changeWorld(unsigned int);
+    void createWidgets();
 
 };

@@ -10,8 +10,10 @@ TCE_Editor::TCE_Editor(QWidget *parent)
 
     createActions();
     createMenus();
-    createLayout();
+
+    createWidgets();
     createWorld(10);
+    createLayout();
 }
 
 void TCE_Editor::aboutMessage()
@@ -22,6 +24,15 @@ void TCE_Editor::aboutMessage()
     msgBox.setText("Copyright (C) 2021 <a href='https://damian-tomczak.pl'>Damian Tomczak</a><br>"
         "Did you find a error? <a href='mailto:kontakt@damian-tomczak.pl'>kontakt@damian-tomczak.pl</a>");
     msgBox.exec();
+}
+
+void TCE_Editor::createWidgets()
+{
+    currentX = new QLabel("Current X: ");
+    currentY = new QLabel("Current Y: ");
+
+    info = new QLabel("Change Color: ");
+    color = new QComboBox;
 }
 
 void TCE_Editor::helpMessage()
@@ -76,7 +87,6 @@ void TCE_Editor::projectSettings()
 
 void TCE_Editor::createWorld(unsigned int WORLD_SIZE)
 {
-
     scene = new GraphicsScene(900 / WORLD_SIZE, WORLD_SIZE, currentX, currentY);
 
     for (unsigned int y = 0; y < WORLD_SIZE; y++)
@@ -127,11 +137,6 @@ void TCE_Editor::createLayout()
     currentLayout = new QHBoxLayout;
     changeLayout = new QHBoxLayout;
 
-    currentX = new QLabel("Current X: ");
-    currentY = new QLabel("Current Y: ");
-
-    info = new QLabel("Change Color: ");
-    color = new QComboBox;
     color->addItem("");
     color->addItem("Orange");
     color->addItem("Yellow");

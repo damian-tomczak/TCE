@@ -25,8 +25,8 @@ void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* mouseEvent)
                     {
                         world[y][x]->bpressed = true;
 
-                        currentX->setText(QString::number(x));
-                        currentY->setText(QString::number(y));
+                        currentX->setText("Current X: " + QString::number(x));
+                        currentY->setText("Current Y: " + QString::number(y));
                     }
                     else
                     {
