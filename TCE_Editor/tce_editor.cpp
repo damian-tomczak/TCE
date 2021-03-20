@@ -28,17 +28,38 @@ void TCE_Editor::aboutMessage()
 
 void TCE_Editor::createWidgets()
 {
-    currentX = new QLabel("Current X: ");
-    currentY = new QLabel("Current Y: ");
+    currentX = new QLabel("Current X: NULL");
+    currentY = new QLabel("Current Y: NULL");
 
     info = new QLabel("Change Color: ");
     color = new QComboBox;
+    color->setEnabled(false);
+    connect(color, &QComboBox::currentIndexChanged, this, &TCE_Editor::switchCall);
+}
+
+void TCE_Editor::switchCall()
+{
+    emit colorChanged(color->currentIndex());
 }
 
 void TCE_Editor::helpMessage()
 {
     QMessageBox::information(NULL, tr("Help Menu"), tr(
         "The program shows how \"three-dimensional\" fps game engines were desgined at the turn of the 1990s."));
+}
+
+void TCE_Editor::legendMessage()
+{
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("Legend Menu");
+    msgBox.setText(
+        "[Red] - Border of the world(inviolable).\n\n"
+        "[Blue] - Empty space in which the player can move.\n\n"
+        "[Yellow] - Solid block which stops the player.\n\n"
+        "[Orange] - Solid block which stops the player.\n\n"
+        "[Purple] - Solid block which stops the player.\n\n"
+    );
+    msgBox.exec();        
 }
 
 void TCE_Editor::errorMessage()
@@ -57,6 +78,9 @@ void TCE_Editor::createActions()
     helpAct = new QAction(tr("Help"), this);
     connect(helpAct, &QAction::triggered, this, &TCE_Editor::helpMessage);
 
+    legendAct = new QAction(tr("Legend"), this);
+    connect(legendAct, &QAction::triggered, this, &TCE_Editor::legendMessage);
+
     projSet = new QAction(tr("Project Settings"), this);
     connect(projSet, &QAction::triggered, this, &TCE_Editor::projectSettings);
 
@@ -72,6 +96,7 @@ void TCE_Editor::createMenus()
     this->setMenuBar(menu);
 
     helpMenu = menuBar()->addMenu(tr("Help"));
+    helpMenu->addAction(legendAct);
     helpMenu->addAction(helpAct);
     helpMenu->addAction(aboutAct);
 }
@@ -87,7 +112,9 @@ void TCE_Editor::projectSettings()
 
 void TCE_Editor::createWorld(unsigned int WORLD_SIZE)
 {
-    scene = new GraphicsScene(900 / WORLD_SIZE, WORLD_SIZE, currentX, currentY);
+    scene = new GraphicsScene(900 / WORLD_SIZE, WORLD_SIZE);
+    connect(this, &TCE_Editor::colorChanged, scene, &GraphicsScene::getColor);
+    connect(scene, &GraphicsScene::comboContent, this, &TCE_Editor::changeCombo);
 
     for (unsigned int y = 0; y < WORLD_SIZE; y++)
     {
@@ -100,10 +127,9 @@ void TCE_Editor::createWorld(unsigned int WORLD_SIZE)
 
             if (y == 0 || y == WORLD_SIZE-1 
                 ||  x == 0 || x == WORLD_SIZE-1)
-                scene->world[y][x]->bborder = true;
+                scene->world[y][x]->type = 0;
 
             scene->addItem(scene->world[y][x]);
-            //world[y][x]->rect = scene->addRect(QRectF(1 * x * tileSize, 1 * y * tileSize, tileSize, tileSize));
         }
     }
 
@@ -137,15 +163,14 @@ void TCE_Editor::createLayout()
     currentLayout = new QHBoxLayout;
     changeLayout = new QHBoxLayout;
 
-    color->addItem("");
-    color->addItem("Orange");
+    color->addItem("Empty space");
     color->addItem("Yellow");
-    color->addItem("Green");
+    color->addItem("Orange");
+    color->addItem("Purple");
 
 
     view = new QGraphicsView(this);
     view->setScene(scene);
-    view->setGeometry(QRect(0, 33, 600, 567));
 
     mainLayout->addWidget(view);
 
@@ -157,10 +182,8 @@ void TCE_Editor::createLayout()
 
     rightLayout->addLayout(currentLayout);
     rightLayout->addLayout(changeLayout);
-    
-    rightLayout->addWidget(currentX);
 
-    rightLayout->setAlignment(Qt::AlignRight);
+    rightLayout->setAlignment(Qt::AlignTop);
 
     mainLayout->addLayout(rightLayout);
 
@@ -174,7 +197,7 @@ void TCE_Editor::createLayout()
 void TCE_Editor::changeWorld(unsigned int WORLD_SIZE)
 {
     delete scene;
-    scene = new GraphicsScene(900 / WORLD_SIZE, WORLD_SIZE, currentX, currentY);
+    scene = new GraphicsScene(900 / WORLD_SIZE, WORLD_SIZE);
 
     for (unsigned int y = 0; y < WORLD_SIZE; y++)
     {
@@ -187,7 +210,7 @@ void TCE_Editor::changeWorld(unsigned int WORLD_SIZE)
 
             if (y == 0 || y == WORLD_SIZE - 1
                 || x == 0 || x == WORLD_SIZE - 1)
-                scene->world[y][x]->bborder = true;
+                scene->world[y][x]->type = 0;
 
             scene->addItem(scene->world[y][x]);
         }
@@ -220,4 +243,24 @@ std::wstring TCE_Editor::ExePath() {
     GetModuleFileName(NULL, buffer, MAX_PATH);
     std::wstring::size_type pos = std::wstring(buffer).find_last_of(L"\\");
     return std::wstring(buffer).substr(0, pos);
+}
+
+void TCE_Editor::changeCombo(int x, int y)
+{
+    qDebug() <<  x;
+    qDebug() <<  y;
+    if (x == -1 || y == -1)
+    {
+        currentX->setText("Current X: NULL");
+        currentY->setText("Current Y: NULL");
+
+        color->setEnabled(false);
+    }
+    else
+    {
+        currentX->setText("Current X: " + QString::number(x));
+        currentY->setText("Current Y: " + QString::number(y));
+
+        color->setEnabled(true);
+    }
 }

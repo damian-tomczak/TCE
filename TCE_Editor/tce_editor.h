@@ -31,6 +31,7 @@ private:
 
     QAction* aboutAct;
     QAction* helpAct;
+    QAction* legendAct;
     QAction* projSet;
     QAction* exportAct;
 
@@ -57,13 +58,20 @@ private:
 
 protected:
     void aboutMessage();
-    void errorMessage();
     void helpMessage();
+    void legendMessage();
+    void errorMessage();
     void exportWorld();
     void createLayout();
     void projectSettings();
     void createWorld(unsigned int);
     void changeWorld(unsigned int);
     void createWidgets();
+
+    void switchCall();
+    void changeCombo(int, int);
+
+signals:
+    void colorChanged(int);
 
 };

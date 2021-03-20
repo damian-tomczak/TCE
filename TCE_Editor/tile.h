@@ -13,6 +13,12 @@ public:
 
 	bool bborder;
 	bool bpressed;
+
+	// 0 RED border 
+	// 1 BLUE empty space 
+	// 2 YELLOW solid 
+	// 3 ORANGE solid 
+	// 4 PURPLE solid 
 	unsigned int type;
 
 private:
