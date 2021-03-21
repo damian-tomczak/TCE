@@ -3,8 +3,9 @@
 #include <QPainter>
 #include <QGraphicsItem>
 
-class Tile : public QGraphicsItem
+class Tile : public QObject, public QGraphicsItem
 {
+	Q_OBJECT
 public:
 	Tile(unsigned int, unsigned int, unsigned int, unsigned int, unsigned int);
 

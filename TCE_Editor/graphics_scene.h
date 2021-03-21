@@ -6,6 +6,7 @@
 #include <QPainter>
 #include <QGraphicsItem>
 #include <QLabel>
+#include <QPropertyAnimation>
 
 #include "tile.h"
 
@@ -27,7 +28,7 @@ public:
     void getColor(int);
 
 private:
-    typedef struct Current {
+    struct Current {
         int valueX;
         int valueY;
     };

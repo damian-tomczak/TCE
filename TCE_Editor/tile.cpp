@@ -43,7 +43,7 @@ void Tile::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWid
 
     if (bpressed)
     {
-        //TODO
+        brush.setColor(QColor(0, 0, 0));
     }
 
     painter->fillRect(rec, brush);

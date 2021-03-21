@@ -3,7 +3,6 @@
 GraphicsScene::GraphicsScene(unsigned int _tileSize, unsigned int _worldSize) :
     TILE_SIZE(_tileSize), WORLD_SIZE(_worldSize)
 {
-    
     current = new Current;
     current->valueX = -1;
     current->valueY = -1;
@@ -54,6 +53,14 @@ void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* mouseEvent)
         }
     }
 
+
+    //QPropertyAnimation* propAnimationFade;
+    //propAnimationFade = new QPropertyAnimation(world[current->valueY][current->valueX], "opacity");
+    //propAnimationFade->setDuration(1000);
+    //propAnimationFade->setStartValue(1.0);
+    //propAnimationFade->setEndValue(0.0);
+    //propAnimationFade->start();
+
     stop:
     emit comboContent(current->valueX, current->valueY);
 
@@ -102,5 +109,26 @@ void GraphicsScene::getColor(int _indexColor)
             break;
         }
     }
-    
+}
+
+void SceneView::wheelEvent(QWheelEvent* event)
+{
+    if (event->modifiers() & Qt::ControlModifier) {
+        // zoom
+        const ViewportAnchor anchor = transformationAnchor();
+        setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+        int angle = event->angleDelta().y();
+        qreal factor;
+        if (angle > 0) {
+            factor = 1.1;
+        }
+        else {
+            factor = 0.9;
+        }
+        scale(factor, factor);
+        setTransformationAnchor(anchor);
+    }
+    else {
+        QGraphicsView::wheelEvent(event);
+    }
 }

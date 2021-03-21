@@ -58,6 +58,9 @@
     <QtMoc Include="graphics_scene.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="tile.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="projectsettings.ui">
@@ -65,7 +68,7 @@
     </QtUic>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="tile.h">
+    <ClInclude Include="item_map.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

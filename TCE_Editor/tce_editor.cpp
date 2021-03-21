@@ -32,8 +32,18 @@ void TCE_Editor::createWidgets()
     currentY = new QLabel("Current Y: NULL");
 
     info = new QLabel("Change Color: ");
+
+    QPropertyAnimation* animation = new QPropertyAnimation(info, "windowOpacity");
+    animation->setDuration(100);
+    animation->setStartValue(1);
+    animation->setEndValue(0);
+
+    animation->start();
+
     color = new QComboBox;
     color->setEnabled(false);
+    color->setPlaceholderText("Select a tile");
+    color->placeholderText();
     connect(color, &QComboBox::currentIndexChanged, this, &TCE_Editor::switchCall);
 }
 
@@ -112,7 +122,9 @@ void TCE_Editor::projectSettings()
 
 void TCE_Editor::createWorld(unsigned int WORLD_SIZE)
 {
-    scene = new GraphicsScene(900 / WORLD_SIZE, WORLD_SIZE);
+    view = new QGraphicsView(this);
+
+    scene = new GraphicsScene(this->width() /WORLD_SIZE, WORLD_SIZE);
     connect(this, &TCE_Editor::colorChanged, scene, &GraphicsScene::getColor);
     connect(scene, &GraphicsScene::comboContent, this, &TCE_Editor::changeCombo);
 
@@ -134,6 +146,7 @@ void TCE_Editor::createWorld(unsigned int WORLD_SIZE)
     }
 
     update();
+    view->setScene(scene);
 }
 
 void TCE_Editor::exportWorld()
@@ -167,10 +180,6 @@ void TCE_Editor::createLayout()
     color->addItem("Yellow");
     color->addItem("Orange");
     color->addItem("Purple");
-
-
-    view = new QGraphicsView(this);
-    view->setScene(scene);
 
     mainLayout->addWidget(view);
 
@@ -255,6 +264,8 @@ void TCE_Editor::changeCombo(int x, int y)
         currentY->setText("Current Y: NULL");
 
         color->setEnabled(false);
+        color->setPlaceholderText("Select a tile");
+        color->placeholderText();
     }
     else
     {
@@ -262,5 +273,6 @@ void TCE_Editor::changeCombo(int x, int y)
         currentY->setText("Current Y: " + QString::number(y));
 
         color->setEnabled(true);
+        color->setPlaceholderText("Select color");
     }
 }

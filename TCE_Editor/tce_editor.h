@@ -7,6 +7,8 @@
 #include <QGraphicsView>
 #include <QComboBox>
 
+#include <QGraphicsOpacityEffect> // to delete
+
 #include <fstream>
 #include <vector>
 #include <windows.h>
