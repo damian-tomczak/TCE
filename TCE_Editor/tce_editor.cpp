@@ -6,7 +6,7 @@ TCE_Editor::TCE_Editor(QWidget *parent)
     ui.setupUi(this);
 
     this->setWindowTitle("TCastEngine");
-    this->resize(800, 600);
+    this->resize(1280, 720);
 
     createActions();
     createMenus();
@@ -122,9 +122,9 @@ void TCE_Editor::projectSettings()
 
 void TCE_Editor::createWorld(unsigned int WORLD_SIZE)
 {
-    view = new QGraphicsView(this);
+    view = new SceneView();
 
-    scene = new GraphicsScene(this->width() /WORLD_SIZE, WORLD_SIZE);
+    scene = new GraphicsScene(this->height()*4/5 /WORLD_SIZE, WORLD_SIZE);
     connect(this, &TCE_Editor::colorChanged, scene, &GraphicsScene::getColor);
     connect(scene, &GraphicsScene::comboContent, this, &TCE_Editor::changeCombo);
 
@@ -206,7 +206,7 @@ void TCE_Editor::createLayout()
 void TCE_Editor::changeWorld(unsigned int WORLD_SIZE)
 {
     delete scene;
-    scene = new GraphicsScene(900 / WORLD_SIZE, WORLD_SIZE);
+    scene = new GraphicsScene(this->height() * 4/5 / WORLD_SIZE, WORLD_SIZE);
 
     for (unsigned int y = 0; y < WORLD_SIZE; y++)
     {

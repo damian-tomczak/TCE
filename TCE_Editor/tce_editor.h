@@ -14,9 +14,10 @@
 #include <windows.h>
 #include <filesystem>
 
-#include "projectsettings.h"
+#include "project_settings.h"
 #include "tile.h"
 #include "graphics_scene.h"
+#include "scene_view.h"
 #include "ui_tce_editor.h"
 
 class TCE_Editor : public QMainWindow

@@ -97,19 +97,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="graphics_scene.cpp" />
+    <ClCompile Include="project_settings.cpp" />
+    <ClCompile Include="scene_view.cpp" />
     <ClCompile Include="tile.cpp" />
     <QtRcc Include="tce_editor.qrc" />
     <QtUic Include="projectsettings.ui" />
     <QtUic Include="tce_editor.ui" />
     <QtMoc Include="tce_editor.h" />
-    <ClCompile Include="projectsettings.cpp" />
     <ClCompile Include="tce_editor.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="projectsettings.h" />
-  </ItemGroup>
-  <ItemGroup>
+    <ClInclude Include="test.h" />
+    <QtMoc Include="project_settings.h" />
+    <ClInclude Include="scene_view.h" />
     <QtMoc Include="graphics_scene.h" />
     <ClInclude Include="item_map.h" />
     <QtMoc Include="tile.h" />

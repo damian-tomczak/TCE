@@ -41,24 +41,27 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="projectsettings.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="tile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="graphics_scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="scene_view.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="project_settings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="projectsettings.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="graphics_scene.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="tile.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="project_settings.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -69,6 +72,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="item_map.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scene_view.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="test.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

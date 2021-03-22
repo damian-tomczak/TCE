@@ -1,4 +1,4 @@
-#include "projectsettings.h"
+#include "project_settings.h"
 
 ProjectSettings::ProjectSettings(QWidget *parent)
 	: QWidget(parent)
