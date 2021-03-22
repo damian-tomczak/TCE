@@ -3,13 +3,12 @@
 #include <QPainter>
 #include <QGraphicsItem>
 
-class Tile : public QObject, public QGraphicsItem
+class Tile : public QGraphicsItem
 {
-	Q_OBJECT
 public:
 	Tile(unsigned int, unsigned int, unsigned int, unsigned int, unsigned int);
 
-	QRectF boundingRect() const;
+	virtual QRectF boundingRect() const;
 	virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
 
 	bool bborder;
@@ -23,8 +22,8 @@ public:
 	unsigned int type;
 
 private:
-	unsigned int x;
-	unsigned int y;
+	unsigned int indexX;
+	unsigned int indexY;
 
 	unsigned int positionX;
 	unsigned int positionY;

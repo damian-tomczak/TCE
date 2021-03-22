@@ -58,9 +58,6 @@
     <QtMoc Include="graphics_scene.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="tile.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="project_settings.h">
       <Filter>Header Files</Filter>
     </QtMoc>
@@ -77,7 +74,7 @@
     <ClInclude Include="scene_view.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="test.h">
+    <ClInclude Include="tile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

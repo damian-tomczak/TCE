@@ -22,9 +22,9 @@ void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* mouseEvent)
                 current->valueX = -1;
                 current->valueY = -1;
             }
-            else if (world[y][x] == item)
+            else if (world[y][x] == item && world[y][x]->bpressed == false)
             {
-                if (!world[y][x]->type == 0) 
+                if (!world[y][x]->type == 0)
                 {
                     if (world[y][x]->bpressed == false)
                     {
@@ -39,34 +39,18 @@ void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* mouseEvent)
                         current->valueX = -1;
                         current->valueY = -1;
                     }
-
-                    item->update();
-                    goto stop;
                 }
             }
             else
             {
                 world[y][x]->bpressed = false;
-                current->valueX = -1;
-                current->valueY = -1;
             }
         }
     }
 
-
-    //QPropertyAnimation* propAnimationFade;
-    //propAnimationFade = new QPropertyAnimation(world[current->valueY][current->valueX], "opacity");
-    //propAnimationFade->setDuration(1000);
-    //propAnimationFade->setStartValue(1.0);
-    //propAnimationFade->setEndValue(0.0);
-    //propAnimationFade->start();
-
-    stop:
     emit comboContent(current->valueX, current->valueY);
 
     update();
-
-    QGraphicsScene::mousePressEvent(mouseEvent);
 }
 
 GraphicsScene::~GraphicsScene()
@@ -84,31 +68,30 @@ GraphicsScene::~GraphicsScene()
 }
 
 void GraphicsScene::getColor(int _indexColor)
-{
-    qDebug() << _indexColor;
-
-    
+{  
     if (current->valueX != -1 && current->valueY != -1)
     {
         switch (_indexColor)
         {
         case 0:
-            world[current->valueY][current->valueY]->type = 1;
+            world[current->valueY][current->valueX]->type = 1;
             break;
 
         case 1:
-            world[current->valueY][current->valueY]->type = 2;
+            world[current->valueY][current->valueX]->type = 2;
             break;
 
         case 2:
-            world[current->valueY][current->valueY]->type = 3;
+            world[current->valueY][current->valueX]->type = 3;
             break;
 
         case 3:
-            world[current->valueY][current->valueY]->type = 4;
+            world[current->valueY][current->valueX]->type = 4;
             break;
         }
     }
+
+    world[current->valueY][current->valueX]->update();
 }
 
 

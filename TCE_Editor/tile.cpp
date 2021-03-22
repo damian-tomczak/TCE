@@ -4,8 +4,8 @@ Tile::Tile(unsigned int _positionX, unsigned int _positionY, unsigned int _x, un
 {
     bpressed = false;
     this->type = 1;
-    this->x = _x;
-    this->y = _y;
+    this->indexX = _x;
+    this->indexY = _y;
 
     this->positionX = _positionX;
     this->positionY = _positionY;
@@ -21,30 +21,33 @@ void Tile::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWid
 {
     QRectF rec = boundingRect();
     QBrush brush(Qt::blue);
+    QColor color;
 
     switch (this->type)
     {
     case 0:
-        brush.setColor(Qt::red);
+        color = Qt::red;
         break;
     case 1:
-        brush.setColor(Qt::blue);
+        color = Qt::blue;
         break;
     case 2:
-        brush.setColor(Qt::yellow);
+        color = Qt::yellow;
         break;
     case 3:
-        brush.setColor(QColor(255, 140, 0));
+        color = QColor(255, 140, 0);
         break;
     case 4:
-        brush.setColor(QColor(138, 43, 226));
+        color = QColor(138, 43, 226);
         break;
     }
 
-    if (bpressed)
+    if (!bpressed)
     {
-        brush.setColor(QColor(0, 0, 0));
+        color.setAlphaF(0.7);
     }
+
+    brush.setColor(color);
 
     painter->fillRect(rec, brush);
     painter->drawRect(rec);

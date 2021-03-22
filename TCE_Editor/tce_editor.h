@@ -7,12 +7,9 @@
 #include <QGraphicsView>
 #include <QComboBox>
 
-#include <QGraphicsOpacityEffect> // to delete
-
 #include <fstream>
 #include <vector>
 #include <windows.h>
-#include <filesystem>
 
 #include "project_settings.h"
 #include "tile.h"

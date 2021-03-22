@@ -108,12 +108,11 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="test.h" />
     <QtMoc Include="project_settings.h" />
     <ClInclude Include="scene_view.h" />
     <QtMoc Include="graphics_scene.h" />
     <ClInclude Include="item_map.h" />
-    <QtMoc Include="tile.h" />
+    <ClInclude Include="tile.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

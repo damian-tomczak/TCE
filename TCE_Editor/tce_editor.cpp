@@ -207,6 +207,8 @@ void TCE_Editor::changeWorld(unsigned int WORLD_SIZE)
 {
     delete scene;
     scene = new GraphicsScene(this->height() * 4/5 / WORLD_SIZE, WORLD_SIZE);
+    connect(this, &TCE_Editor::colorChanged, scene, &GraphicsScene::getColor);
+    connect(scene, &GraphicsScene::comboContent, this, &TCE_Editor::changeCombo);
 
     for (unsigned int y = 0; y < WORLD_SIZE; y++)
     {
@@ -242,7 +244,7 @@ void TCE_Editor::startup(LPWSTR lpApplicationName)
     }
     else
     {
-        qDebug() << "CreateProcess failed " << GetLastError();
+        errorMessage();
     }
 
 }
@@ -256,8 +258,6 @@ std::wstring TCE_Editor::ExePath() {
 
 void TCE_Editor::changeCombo(int x, int y)
 {
-    qDebug() <<  x;
-    qDebug() <<  y;
     if (x == -1 || y == -1)
     {
         currentX->setText("Current X: NULL");
