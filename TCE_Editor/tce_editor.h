@@ -51,12 +51,13 @@ private:
 
     QWidget* mainWidget;
 
+    ProjectSettings* wProjSet;
+
     void createMenus();
     void createActions();
     void startup(LPWSTR);
     std::wstring ExePath();
 
-protected:
     void aboutMessage();
     void helpMessage();
     void legendMessage();

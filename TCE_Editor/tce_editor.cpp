@@ -43,7 +43,7 @@ void TCE_Editor::createWidgets()
     color = new QComboBox;
     color->setEnabled(false);
     color->setPlaceholderText("Select a tile");
-    color->placeholderText();
+    color->setCurrentIndex(-1);
     connect(color, &QComboBox::currentIndexChanged, this, &TCE_Editor::switchCall);
 }
 
@@ -113,7 +113,6 @@ void TCE_Editor::createMenus()
 
 void TCE_Editor::projectSettings()
 {
-    ProjectSettings* wProjSet;
     wProjSet = new ProjectSettings();
 
     connect(wProjSet, &ProjectSettings::changed, this, &TCE_Editor::changeWorld);
@@ -156,14 +155,15 @@ void TCE_Editor::exportWorld()
 
     for (unsigned int y = 0; y < scene->WORLD_SIZE; y++)
     {
-        str.append("\n");
         for (unsigned int x = 0; x < scene->WORLD_SIZE; x++)
         {
             str.append(std::to_string(scene->world[y][x]->type));
         }
+        str.append("\n");
     }
 
     file.write(&str[0], str.length());
+    file.close();
 
     std::wstring path = ExePath() + L"\\TCE.exe";
     startup(const_cast<wchar_t*>(path.c_str()));
@@ -236,6 +236,7 @@ void TCE_Editor::startup(LPWSTR lpApplicationName)
 {
     STARTUPINFO info = { sizeof(info) };
     PROCESS_INFORMATION processInfo;
+
     if (CreateProcess(lpApplicationName, NULL, NULL, NULL, TRUE, 0, NULL, NULL, &info, &processInfo))
     {
         WaitForSingleObject(processInfo.hProcess, INFINITE);
@@ -265,7 +266,6 @@ void TCE_Editor::changeCombo(int x, int y)
 
         color->setEnabled(false);
         color->setPlaceholderText("Select a tile");
-        color->placeholderText();
     }
     else
     {
@@ -275,4 +275,5 @@ void TCE_Editor::changeCombo(int x, int y)
         color->setEnabled(true);
         color->setPlaceholderText("Select color");
     }
+    color->setCurrentIndex(-1);
 }

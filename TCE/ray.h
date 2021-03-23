@@ -73,7 +73,7 @@ public:
 		{
 			int wallGridContent = world->getWallContentAt(nextHorzTouchX, nextHorzTouchY + (this->isRayFacingUp ? -1 : 0));
 
-			if (wallGridContent != 0) {
+			if (wallGridContent != 1) {
 				foundHorzWallHit = true;
 				horzWallHitX = nextHorzTouchX;
 				horzWallHitY = nextHorzTouchY;
@@ -112,7 +112,7 @@ public:
 		{
 			int wallGridContent = world->getWallContentAt(nextVertTouchX + (this->isRayFacingLeft ? -1 : 0), nextVertTouchY);
 
-			if (wallGridContent != 0)
+			if (wallGridContent != 1)
 			{
 				foundVertWallHit = true;
 				vertWallHitX = nextVertTouchX;

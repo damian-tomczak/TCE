@@ -24,7 +24,7 @@ void castAllRays();
 float toRadian(float);
 
 Game* game = new Game(SCR_HEIGHT, SCR_WIDTH);
-Player* player = new Player(glm::vec2(300.f, 300.f), toRadian(90), toRadian(60));
+Player* player = new Player(glm::vec2(200.f, 200.f), toRadian(90), toRadian(60));
 World* world = new World(SCR_HEIGHT, game);
 
 std::vector<Ray*> rays = std::vector<Ray*>();
@@ -33,7 +33,7 @@ using Clock = std::chrono::high_resolution_clock;
 using TimePoint = Clock::time_point;
 using Duration = std::chrono::duration<float, std::ratio<1, 1>>;
 
-int WinMain()
+int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -147,13 +147,15 @@ int WinMain()
                 shader1.setMat4("model", model);
 
                 if (world->map[y][x] == 0)
-                    shader1.setVec4("color", 0.f, 0.f, 0.f, 1.f);
-                else if (world->map[y][x] == 1)
                     shader1.setVec4("color", 1.f, 1.f, 1.f, 1.f);
+                else if (world->map[y][x] == 1)
+                    shader1.setVec4("color", 0.f, 0.f, 0.f, 1.f);
                 else if (world->map[y][x] == 2)
-                    shader1.setVec4("color", 0.f, 1.f, 0.f, 1.f);
+                    shader1.setVec4("color", 1.f, 1.f, 0.f, 1.f);
                 else if (world->map[y][x] == 3)
-                    shader1.setVec4("color", 0.f, 0.f, 1.f, 1.f);
+                    shader1.setVec4("color", 1.f, 0.65f, 0.f, 1.f);
+                else if (world->map[y][x] == 4)
+                    shader1.setVec4("color", 0.5f, 0.f, 0.5f, 1.f);
                 
                 glDrawArrays(GL_TRIANGLES, 0, 6);
             }
@@ -231,12 +233,14 @@ int WinMain()
 
             bool colorBrightness = ray->wasHitVertical ? true : false;
 
-            if (ray->hitWallColor == 1)
+            if (ray->hitWallColor == 0)
                 shader1.setVec4("color", colorBrightness ? 1.f : 0.78f, 0.f, 0.f, 1.f);
             else if (ray->hitWallColor == 2)
-                shader1.setVec4("color", 0.f, colorBrightness ? 1.f : 0.78f, 0.f, 1.f);
+                shader1.setVec4("color", colorBrightness ? 1.f : 0.78f, colorBrightness ? 1.f : 0.78f, 0.f, 1.f);
             else if (ray->hitWallColor == 3)
-                shader1.setVec4("color", 0.f, 0.f, colorBrightness ? 1.f : 0.78f, 1.f);
+                shader1.setVec4("color", colorBrightness ? 1.f : 0.78f, colorBrightness ? 0.65f : 0.51f, 0.f, 1.f);
+            else if (ray->hitWallColor == 4)
+                shader1.setVec4("color", colorBrightness ? 0.5f : 0.39f, 0.f, colorBrightness ? 0.5f : 0.39f, 1.f);
 
             glDrawArrays(GL_TRIANGLES, 0, 6);
         }
@@ -290,7 +294,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 void processInput(GLFWwindow* window)
 {
-    if (!world->getWallContentAt(player->position.x+player->newPos.x, player->position.y+player->newPos.y))
+    if (world->getWallContentAt(player->position.x+player->newPos.x, player->position.y+player->newPos.y) == 1)
     {
         if (glfwGetKey(window, GLFW_KEY_W))
         {
@@ -332,9 +336,7 @@ void castAllRays()
 
     float rayAngle = player->angle - (player->fov / 2);
 
-    float odstep = player->fov / 360;
-
-    for (unsigned int i = 0; i <= toRadian(360)*RAYS - player->fov /2; i++)
+    for (unsigned int i = 0; i <= (toRadian(360)*RAYS)-26; i++)
     {
         rayAngle += player->fov / RAYS;
         Ray* ray = new Ray(rayAngle);

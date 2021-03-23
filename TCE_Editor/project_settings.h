@@ -14,15 +14,17 @@ class ProjectSettings : public QWidget
 
 public:
 	ProjectSettings(QWidget *parent = Q_NULLPTR);
-	~ProjectSettings();
 
 private:
 	Ui::ProjectSettings ui;
 	QSpinBox* size;
+	QSpinBox* playerX;
+	QSpinBox* playerY;
+
 	QPushButton* button;
 	QLabel* label;
 
-	void setWorldSize();
+	void setProjSet();
 
 signals:
 	void changed(unsigned int);
